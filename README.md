@@ -1,5 +1,5 @@
 # Advent of Code
-![AoC 2021 06/50](https://img.shields.io/badge/AoC%202021-06%2F50-orange)
+![AoC 2021 08/50](https://img.shields.io/badge/AoC%202021-08%2F50-orange)
 
 ## How to run
 1. Create a `cookie` file in the directory and put your session cookie from the site
