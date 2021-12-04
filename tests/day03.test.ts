@@ -30,7 +30,3 @@ test('day 2-2-1', () => {
 test('day 2-2-2', () => {
   expect(getCO2GeneratorRating(input)).toBe('01010')
 })
-
-// test('day 2-2', () => {
-//   expect(calcAim(reports)).toBe(900)
-// })
