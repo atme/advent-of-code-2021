@@ -1,4 +1,4 @@
-import { parse, findIntersectionsBetweenLines, first, fillLine, second } from '../src/day05'
+import { first, second } from '../src/day05'
 
 const input = `
 0,9 -> 5,9
@@ -11,11 +11,6 @@ const input = `
 3,4 -> 1,4
 0,0 -> 8,8
 5,5 -> 8,2`
-
-test('day-5-1 findIntersections', () => {
-  const lines = parse(input).map(fillLine)
-  expect(findIntersectionsBetweenLines(lines[0], lines[6]).length).toBe(3)
-})
 
 test('day-5-1 first', () => {
   expect(first(input)).toBe(5)

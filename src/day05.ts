@@ -1,6 +1,5 @@
 type Point = { x: number; y: number }
 type Line = { start: Point; end: Point }
-type FilledLine = string[]
 
 const parsePoint = (p: string) => {
   const [x, y] = p.split(',')
@@ -15,7 +14,7 @@ const parseLine = (s: string) => {
 export const parse = (input: string) => input.trim().split('\n').map(parseLine)
 
 export const fillLine = (line: Line) => {
-  const result: FilledLine = []
+  const result: string[] = []
 
   const xSign = Math.sign(line.end.x - line.start.x)
   const ySign = Math.sign(line.end.y - line.start.y)
@@ -33,28 +32,18 @@ export const fillLine = (line: Line) => {
   return result
 }
 
-export const findIntersectionsBetweenLines = (l1: FilledLine, l2: FilledLine) =>
-  l1.filter((point) => l2.includes(point))
-
-export const findIntersections = (lines: FilledLine[]) => {
-  const intersections: FilledLine = []
-  for (let i = 0; i < lines.length; i++) {
-    for (let j = i + 1; j < lines.length; j++) {
-      intersections.push(...findIntersectionsBetweenLines(lines[i], lines[j]))
-    }
-  }
-
-  return new Set(intersections)
-}
+export const findIntersections = (points: string[]) =>
+  new Set(points.filter((point, index) => index !== points.indexOf(point)))
 
 export const first = (input: string) => {
   const lines = parse(input)
     .filter(({ start, end }) => start.x === end.x || start.y === end.y)
-    .map(fillLine)
+    .flatMap(fillLine)
+
   return findIntersections(lines).size
 }
 
 export const second = (input: string) => {
-  const lines = parse(input).map(fillLine)
+  const lines = parse(input).flatMap(fillLine)
   return findIntersections(lines).size
 }
