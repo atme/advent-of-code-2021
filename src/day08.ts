@@ -1,15 +1,15 @@
-const sortLetters = (letters: string) => letters.split('').sort().join('')
+import { invert } from "lodash"
+
+const sortLetters = (letters: string) => Array.from(letters).sort().join('')
 export const parse = (input: string) =>
   input
     .trim()
     .split('\n')
-    .map((s) => {
-      const [signal, output] = s.split(' | ')
-      return {
-        signal: signal.split(' ').map(sortLetters),
-        output: output.split(' ').map(sortLetters),
-      }
-    })
+    .map((s) => s.split(' | ') as [string, string])
+    .map(([signal, output]) => ({
+      signal: signal.split(' ').map(sortLetters),
+      output: output.split(' ').map(sortLetters),
+    }))
 
 export const first = (input: string) => {
   const isSearchedNumber = (s: string) =>
@@ -21,41 +21,32 @@ export const first = (input: string) => {
 }
 
 const has = (bigString: string, smallString: string) =>
-  !Array.from(smallString)
-    .map((letter) => bigString.includes(letter))
-    .includes(false)
+  Array.from(smallString).every((l) => bigString.includes(l))
 
-export const decipher = (line: string[]) => {
-  const one = line.find((letters) => letters.length === 2) || ''
-  const four = line.find((letters) => letters.length === 4) || ''
-  const seven = line.find((letters) => letters.length === 3) || ''
-  const eight = line.find((letters) => letters.length === 7) || ''
+const length = (l: number) => (s: string) => s.length === l
+const find = (a: string[], fn: (v: string) => boolean) => a.find(fn) || ''
+const not = (a: string, b: string) => (l: string) => l !== a && l !== b
 
-  const twoThreeFive = line.filter((letters) => letters.length === 5)
-  const three = twoThreeFive.find((letters) => has(letters, one)) || ''
-
-  const zeroSixNine = line.filter((letters) => letters.length === 6)
-  const six = zeroSixNine.find((letters) => !has(letters, one)) || ''
-  const nine = zeroSixNine.find((letters) => has(letters, three)) || ''
-  const zero =
-    zeroSixNine.find((letters) => letters !== six && letters !== nine) || ''
-
-  const five = twoThreeFive.find((letters) => has(six, letters)) || ''
-  const two =
-    twoThreeFive.find((letters) => letters !== three && letters !== five) || ''
-
-  return {
-    [zero]: '0',
-    [one]: '1',
-    [two]: '2',
-    [three]: '3',
-    [four]: '4',
-    [five]: '5',
-    [six]: '6',
-    [seven]: '7',
-    [eight]: '8',
-    [nine]: '9',
+export const decipher = (signal: string[]) => {
+  const codes: Record<string, string> = {
+    '1': find(signal, length(2)),
+    '4': find(signal, length(4)),
+    '7': find(signal, length(3)),
+    '8': find(signal, length(7)),
   }
+
+  const twoThreeFive = signal.filter(length(5))
+  codes['3'] = find(twoThreeFive, (letters) => has(letters, codes['1']))
+
+  const zeroSixNine = signal.filter(length(6))
+  codes['6'] = find(zeroSixNine, (letters) => !has(letters, codes['1']))
+  codes['9'] = find(zeroSixNine, (letters) => has(letters, codes['3']))
+  codes['0'] = find(zeroSixNine, not(codes['6'], codes['9']))
+
+  codes['5'] = find(twoThreeFive, (letters) => has(codes['6'], letters))
+  codes['2'] = find(twoThreeFive, not(codes['3'], codes['5']))
+
+  return invert(codes)
 }
 
 export const second = (input: string) =>
